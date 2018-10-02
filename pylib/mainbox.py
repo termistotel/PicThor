@@ -112,7 +112,7 @@ class MainBox(BoxLayout):
 
 		# Binding filter lists
 		# self.previewer.filterselector.lockChild.bind(selectedFilterList=self.setter('selectedFilterList'))
-		self.bind(selectedFilterList=self.previewer.filterselector.lockChild.setter('selectedFilterList'))
+		# self.bind(selectedFilterList=self.previewer.filterselector.lockChild.setter('selectedFilterList'))
 
 		self.add_widget(self.previewer)
 

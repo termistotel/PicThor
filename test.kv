@@ -7,7 +7,7 @@
 		BoxLayout:
 			canvas.before:
 				Color:
-					rgb: (0, 0, 1)
+					rgb: (0.1, 0.1, 0.1)
 				Rectangle:
 					pos: (self.x, self.y)
 					size: (self.width, self.height)
@@ -43,7 +43,7 @@
 				id: imdisplaycont
 				canvas:
 					Color:
-						rgba: (1, 1, 0, 0.1)
+						rgba: (1, 0, 0, 0.1)
 					Rectangle:
 						size: (self.width, self.height)
 						pos: (self.x, self.y)
@@ -88,11 +88,9 @@
 				text: 'Browse'
 
 			Label:
-				id: testbutton
 
 
 # FilterMenu Button and content definition:
-
 <ClickMenuButton>:
 	pos_hint: {'top': 1}
 	size_hint: (0.1, None)
@@ -145,19 +143,18 @@
 
         Button:
             text: 'Icon View'
-            on_press: fc.view_mode = 'icon'
+            on_press: filechooser.view_mode = 'icon'
         Button:
             text: 'List View'
-            on_press: fc.view_mode = 'list'
+            on_press: filechooser.view_mode = 'list'
 
     MyFileChooser:
-        id: fc
+        id: filechooser
         FileChooserIconLayout
         FileChooserListLayout
 
 
 # Kernel Editor definition
-
 <KernelEditor>:
 	orientation: 'vertical'
 

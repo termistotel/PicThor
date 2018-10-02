@@ -5,7 +5,7 @@ from kivy.uix.filechooser import FileChooser
 class FileBrowser(BoxLayout):
 	def __init__(self, main, **kwargs):
 		super(FileBrowser, self).__init__(**kwargs)
-		self.ids.fc.on_submit=main.browserReturnFunction
+		self.ids.filechooser.on_submit=main.browserReturnFunction
 
 
 class MyFileChooser(FileChooser):

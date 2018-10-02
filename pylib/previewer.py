@@ -18,8 +18,7 @@ class Previewer(RelativeLayout):
 	srcLoc = StringProperty('')
 
 	def __init__(self, main, **kwargs):
-		self.ratio = 0.1
-
+		self.ratio = 1
 		self.srcImg = Texture.create(size=(0,0))
 		self.convImg = Texture.create(size=(0,0))
 
@@ -64,9 +63,8 @@ class ImageDisplayContainer(BoxLayout):
 
 
 class ImageDisplay(Label):
-
 	ratio = NumericProperty(0)
-
+	
 	def on_size(self, val1, val2):
 		self.parent.chLayout()
 

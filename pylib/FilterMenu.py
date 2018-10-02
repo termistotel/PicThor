@@ -19,12 +19,12 @@ def inRect(rect, point):
 
 
 class ClickMenuButton(ToggleButton):
-
 	def __init__(self, main, contentLength=0.5, **kwargs):
 		self.contentLength = contentLength
 		self.lockChild = MoveableContent(main, self)
 		super(ClickMenuButton, self).__init__(**kwargs)
 
+	# Transition Animations
 	def on_state(self, val1, state):
 		if state=="normal":
 			Animation(x = self.lockChild.lowVal, duration=0.4, t='out_cubic').start(self.lockChild)
@@ -52,6 +52,9 @@ class MoveableContent(RelativeLayout):
 		# Add children
 		self.filterSelectMaster = FilterSelectMaster(main)
 		self.ids.container.add_widget(self.filterSelectMaster)
+
+		# Allow main to update filter list
+		main.updateFilterList = self.updateFilterList
 
 	def on_lowVal(self, val1, val2):
 		if self.lockParent.state=="normal":
@@ -83,6 +86,10 @@ class FilterSelectMaster(Accordion):
 			section.add_widget(container)
 			self.add_widget(section)
 			
+	def updateFilterList(self):
+		for child in self.children:
+			for gchild in child.children:
+				gchild.updateFilterList()
 
 class FilterGroupContainter(GridLayout):
 	def __init__(self, db, group, **kwargs):
@@ -90,8 +97,8 @@ class FilterGroupContainter(GridLayout):
 		self.cols = 5
 		self.db = db
 		self.group = group
-		self.updateFilters()
+		self.updateFilterList()
 
-	def updateFilters(self):
+	def updateFilterList(self):
 		for row in self.db.getAllFromGroup(self.group):
 			self.add_widget(ToggleButton(text=row[1]))
