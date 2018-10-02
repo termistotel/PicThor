@@ -1,0 +1,193 @@
+
+<Previewer>:
+	BoxLayout:
+		size_hint: (1, 1)
+		orientation: 'vertical'
+
+		BoxLayout:
+			canvas.before:
+				Color:
+					rgb: (0, 0, 1)
+				Rectangle:
+					pos: (self.x, self.y)
+					size: (self.width, self.height)
+
+			id: mainview
+			orientation: 'vertical'
+
+			BoxLayout:
+				id:toolbar
+				padding: [10, 10]
+				spacing: 10
+				size_hint_y: None
+				height: 50
+
+				Label:
+					id: FSspace
+					size_hint_x: None
+					size: (root.filterselector.width - self.parent.spacing, self.height)
+				Label:
+				Label:
+				Button:
+					text: 'RL'
+				Button:
+					text: 'RR'
+				Label:
+				Button:
+					text: 'CV'
+				Button:
+					text: 'CH'
+
+			ImageDisplayContainer:
+				ratio: root.ratio
+				id: imdisplaycont
+				canvas:
+					Color:
+						rgba: (1, 1, 0, 0.1)
+					Rectangle:
+						size: (self.width, self.height)
+						pos: (self.x, self.y)
+
+				size_hint: (1, 1)
+				orientation: 'horizontal'
+
+				ImageDisplay:
+					ratio: root.ratio
+					id: beforeimage
+					canvas:
+						Rectangle:
+							# size and pos are extremely complicated
+							size: (self.width, int(self.width*root.ratio)) if (root.ratio < self.height/self.width) else (int(self.height/root.ratio), self.height)
+							pos: ((self.center_x - self.width/2, self.center_y - self.width*self.ratio/2) if (self.width*root.ratio <= self.height) else (self.center_x - self.height/self.ratio/2, self.center_y - self.height/2)) if self.parent.orientation=='horizontal' else ((self.center_x - self.height/self.ratio/2, self.center_y - self.height/2) if (self.width*root.ratio > self.height) else (self.center_x - self.width/2, self.center_y - self.width*self.ratio/2))							
+							texture: root.srcImg
+
+				ImageDisplay:
+					ratio: root.ratio
+					id: convolvedimage
+					canvas:
+						Rectangle:
+							size: (self.width, int(self.width*root.ratio)) if (root.ratio < self.height/self.width) else (int(self.height/root.ratio), self.height)
+							pos: ((self.center_x - self.width/2, self.center_y - self.width*self.ratio/2) if (self.width*root.ratio <= self.height) else (self.center_x - self.height/self.ratio/2, self.center_y - self.height/2)) if self.parent.orientation=='horizontal' else ((self.center_x - self.height/self.ratio/2, self.center_y - self.height/2) if (self.width*root.ratio > self.height) else (self.center_x - self.width/2, self.center_y - self.width*self.ratio/2))
+							texture: root.convImg
+
+		GridLayout:
+			cols: 4
+			padding: [10, 10]
+			spacing: 10
+			size_hint_y: None
+			height: 50
+
+			Label:
+
+			Button:
+				id: applybutton
+				text: 'Apply Filter'
+
+			Button:
+				id: brbutton
+				text: 'Browse'
+
+			Label:
+				id: testbutton
+
+
+# FilterMenu Button and content definition:
+
+<ClickMenuButton>:
+	pos_hint: {'top': 1}
+	size_hint: (0.1, None)
+	size: (self.width, 50)
+	text: 'FM'
+
+<MoveableContent>:
+	pos_hint: {'top': 1}
+	size_hint: (self.lockParent.contentLength, None)
+
+	lowVal: self.lockParent.x - self.width
+	highVal: self.lockParent.x
+
+	BoxLayout:
+		orientation: 'vertical'
+		id: container
+		BoxLayout:
+			canvas.before:
+			size_hint_y: None
+			size: (self.width, root.lockParent.height)
+
+			Label:
+				size_hint: (None, None)
+				size: root.lockParent.size
+			Button:
+				text: 'Clear'
+				size_hint_x: 0.8
+			Button:
+				id: kerbutton
+				text: 'Add'
+				size_hint: (None, None)
+				size: root.lockParent.size
+
+		# FilterSelectMaster:
+		# 	orientation: 'vertical'
+		# 	main: root.main
+		# 	id: filterAccordion
+
+
+# File browser kv definitions
+
+<FileBrowser>:
+    orientation: 'vertical'
+
+    BoxLayout:
+    	padding: [10, 10]
+    	spacing: 10
+        size_hint_y: None
+        height: 50
+
+        Button:
+            text: 'Icon View'
+            on_press: fc.view_mode = 'icon'
+        Button:
+            text: 'List View'
+            on_press: fc.view_mode = 'list'
+
+    MyFileChooser:
+        id: fc
+        FileChooserIconLayout
+        FileChooserListLayout
+
+
+# Kernel Editor definition
+
+<KernelEditor>:
+	orientation: 'vertical'
+
+	BoxLayout:
+		orientation: 'horizontal'
+
+		Button:
+			size_hint_x: 0.2
+
+			
+		RelativeLayout:
+
+			KernelMatrix:
+				id: matrix
+				spacing: 10
+
+				cols: self.dimension
+
+				childWidth: self.parent.width / 15
+				size_hint: (None, None)
+				size: (self.childWidth*self.dimension, self.childWidth*self.dimension)
+				
+				pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+
+		Button:
+			id: dimensionbutton
+			text: "test"
+			size_hint_x: 0.1
+
+	Button:
+		size_hint_y: 0.05
+		id: returnbutton
