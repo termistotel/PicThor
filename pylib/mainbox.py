@@ -2,6 +2,7 @@ from pylib.previewer import Previewer
 from pylib.filebrowser import FileBrowser
 from pylib.kerneleditor import KernelEditor
 from pylib.dblink import DBlink
+from pylib.irregularNameTest import testIfRegular
 
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics.texture import Texture
@@ -15,8 +16,8 @@ import numpy as np
 import cv2
 
 
-# Function for converting cv2 image type, to kivy texture type
 
+# Function for converting cv2 image type, to kivy texture type
 def picToTextureBuffer(matrix):
 	return cv2.flip(matrix[:,:,[2,1,0]],0).tostring()
 
@@ -91,12 +92,14 @@ class MainBox(BoxLayout):
 		self.changeView("previewer")
 		#nextStep
 
+	def kernelEditorSave(self, group, name, npArray):
+		if testIfRegular(group, name):
+			self.database.saveFilter(group, name, npArray)
 
 
-
-	def __init__(self, **kwargs):
+	def __init__(self, db, **kwargs):
 		super(MainBox, self).__init__(**kwargs)
-		self.database = DBlink("PicThor.db")
+		self.database = db
 
 		# Functions for quick debugging
 

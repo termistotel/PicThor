@@ -11,6 +11,9 @@ from kivy.animation import Animation
 
 from functools import partial
 
+from pylib.irregularNameTest import testIfRegular
+
+
 def inRect(rect, point):
 	x,y = point
 	xbound = (x > rect.x) and (x < (rect.x + rect.width))
@@ -80,11 +83,12 @@ class FilterSelectMaster(Accordion):
 		self.orientation="vertical"
 
 		for group in main.database.groupList():
-			section = AccordionItem(title=group)
-			container = FilterGroupContainter(db=main.database, group=group)
+			if testIfRegular(group, "legitName"):
+				section = AccordionItem(title=group)
+				container = FilterGroupContainter(db=main.database, group=group)
 
-			section.add_widget(container)
-			self.add_widget(section)
+				section.add_widget(container)
+				self.add_widget(section)
 			
 	def updateFilterList(self):
 		for child in self.children:
@@ -101,4 +105,5 @@ class FilterGroupContainter(GridLayout):
 
 	def updateFilterList(self):
 		for row in self.db.getAllFromGroup(self.group):
-			self.add_widget(ToggleButton(text=row[1]))
+			if testIfRegular(row[0], row[1]):
+				self.add_widget(ToggleButton(text=row[1]))
