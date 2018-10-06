@@ -106,4 +106,30 @@ class FilterGroupContainter(GridLayout):
 	def updateFilterList(self):
 		for row in self.db.getAllFromGroup(self.group):
 			if testIfRegular(row[0], row[1]):
-				self.add_widget(ToggleButton(text=row[1]))
+				self.add_widget(Filter(filtergroup=row[0], filtername=row[1], filterarray=row[2], selectfun=lambda filter, state: print(filter.filtername + " " + state)))
+
+class Filter(ToggleButton):
+	def __init__(self, filtergroup, filtername, filterarray, selectfun=lambda filter, state: print("Not implemented"), **kwargs):
+		super(Filter, self).__init__(**kwargs)
+		self.filtergroup = filtergroup
+		# TODO:
+		# change to filtergroup of the filter should be bound to change it from one filterGroupContainer to another
+
+		self.filtername = filtername
+		self.filterarray = filterarray
+
+		# Use self as an argument to a function that is applied when filter is selected
+		self.select = partial(selectfun, self)
+
+		# Filters are a part of the same group so that only one can be selected
+		self.group = "filters"
+
+		# Text of the button should be the name of the button
+		self.text = self.filtername
+		# TODO:
+		# Text should really be bound to filtername here
+
+
+
+	def on_state(self, val1, state):
+		self.select(state)
