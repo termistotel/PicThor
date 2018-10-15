@@ -33,7 +33,7 @@ class KernelMatrix(GridLayout):
 			self.add_widget(elem)
 
 	def toNumpy(self):
-		return np.array(list(map(lambda x: int(x.text), self.matrix))).reshape(self.dimension,self.dimension)
+		return np.array(list(map(lambda x: float(x.text), self.matrix))).reshape(self.dimension,self.dimension)
 
 	def on_dimension(self, val1, val2):
 		self.drawMatrix()

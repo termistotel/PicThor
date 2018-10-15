@@ -85,7 +85,7 @@ class FilterSelectMaster(Accordion):
 		for group in main.database.groupList():
 			if testIfRegular(group, "legitName"):
 				section = AccordionItem(title=group)
-				container = FilterGroupContainter(db=main.database, group=group)
+				container = FilterGroupContainter(db=main.database, group=group, selectFun=main.selectCallback)
 
 				section.add_widget(container)
 				self.add_widget(section)
@@ -96,30 +96,33 @@ class FilterSelectMaster(Accordion):
 				gchild.updateFilterList()
 
 class FilterGroupContainter(GridLayout):
-	def __init__(self, db, group, **kwargs):
+	def __init__(self, db, group, selectFun, **kwargs):
 		super(FilterGroupContainter, self).__init__(**kwargs)
 		self.cols = 5
 		self.db = db
 		self.group = group
-		self.updateFilterList()
+		self.selectFun = selectFun
+		self.updateFilterList(self.selectFun)
 
-	def updateFilterList(self):
+	def updateFilterList(self, selectFun):
 		for row in self.db.getAllFromGroup(self.group):
+			print(row)
 			if testIfRegular(row[0], row[1]):
-				self.add_widget(Filter(filtergroup=row[0], filtername=row[1], filterarray=row[2], selectfun=lambda filter, state: print(filter.filtername + " " + state)))
+				self.add_widget(Filter(filtergroup=row[0], filtername=row[1], grayscale=row[2], filterarray=row[3], selectFun=selectFun))
 
 class Filter(ToggleButton):
-	def __init__(self, filtergroup, filtername, filterarray, selectfun=lambda filter, state: print("Not implemented"), **kwargs):
+	def __init__(self, filtergroup, filtername, grayscale, filterarray, selectFun=lambda filter, state: print("Not implemented"), **kwargs):
 		super(Filter, self).__init__(**kwargs)
 		self.filtergroup = filtergroup
 		# TODO:
 		# change to filtergroup of the filter should be bound to change it from one filterGroupContainer to another
 
 		self.filtername = filtername
+		self.grayscale = grayscale
 		self.filterarray = filterarray
 
 		# Use self as an argument to a function that is applied when filter is selected
-		self.select = partial(selectfun, self)
+		self.select = selectFun
 
 		# Filters are a part of the same group so that only one can be selected
 		self.group = "filters"
@@ -129,7 +132,5 @@ class Filter(ToggleButton):
 		# TODO:
 		# Text should really be bound to filtername here
 
-
-
-	def on_state(self, val1, state):
-		self.select(state)
+	def on_state(self, object, state):
+		self.select(object, state)
