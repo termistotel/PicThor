@@ -15,7 +15,7 @@ class KernelEditor(BoxLayout):
 	def __init__(self, main, **kwargs):
 		super(KernelEditor, self).__init__(**kwargs)
 		self.ids.returnbutton.on_press = main.kernelEditorReturnFunction
-		self.ids.savekernelbutton.on_press = lambda: main.kernelEditorSave(group=self.ids.filtergroup.text, name=self.ids.filtername.text, npArray=self.ids.matrix.toNumpy())
+		self.ids.savekernelbutton.on_press = lambda: main.kernelEditorSave(group=self.ids.filtergroup.text, name=self.ids.filtername.text, mode="grayscale", npArray=self.ids.matrix.toNumpy())
 
 		self.ids.dimensionbutton.on_press=self.increaseDimension
 

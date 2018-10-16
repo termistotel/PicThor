@@ -51,8 +51,9 @@ class MainBox(BoxLayout):
 		matrica = self.previewer.src
 		if not (matrica is None):
 			if self.filter:
-				filtered = cv2.filter2D(matrica, -1, self.filter.filterarray)
-				self.previewer.convImg.blit_buffer(picToTextureBuffer(filtered), colorfmt='bgr')
+				if self.filter.mode == "grayscale":
+					filtered = cv2.filter2D(matrica, -1, self.filter.filterarray)
+					self.previewer.convImg.blit_buffer(picToTextureBuffer(filtered), colorfmt='rgb')
 
 	#Done/Return functions:
 
@@ -89,9 +90,9 @@ class MainBox(BoxLayout):
 		self.changeView("previewer")
 		#nextStep
 
-	def kernelEditorSave(self, group, name, npArray):
+	def kernelEditorSave(self, group, name, mode, npArray):
 		if testIfRegular(group, name):
-			self.database.saveFilter(group, name, npArray)
+			self.database.saveFilter(group, name, mode, npArray)
 
 	def selectCallback(self, object, state):
 		if state=="down":

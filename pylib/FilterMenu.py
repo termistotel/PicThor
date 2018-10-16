@@ -108,17 +108,17 @@ class FilterGroupContainter(GridLayout):
 		for row in self.db.getAllFromGroup(self.group):
 			print(row)
 			if testIfRegular(row[0], row[1]):
-				self.add_widget(Filter(filtergroup=row[0], filtername=row[1], grayscale=row[2], filterarray=row[3], selectFun=selectFun))
+				self.add_widget(Filter(filtergroup=row[0], filtername=row[1], mode=row[2], filterarray=row[3], selectFun=selectFun))
 
 class Filter(ToggleButton):
-	def __init__(self, filtergroup, filtername, grayscale, filterarray, selectFun=lambda filter, state: print("Not implemented"), **kwargs):
+	def __init__(self, filtergroup, filtername, mode, filterarray, selectFun=lambda filter, state: print("Not implemented"), **kwargs):
 		super(Filter, self).__init__(**kwargs)
 		self.filtergroup = filtergroup
 		# TODO:
 		# change to filtergroup of the filter should be bound to change it from one filterGroupContainer to another
 
 		self.filtername = filtername
-		self.grayscale = grayscale
+		self.mode = mode
 		self.filterarray = filterarray
 
 		# Use self as an argument to a function that is applied when filter is selected

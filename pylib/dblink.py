@@ -38,10 +38,10 @@ class DBlink(object):
 			self.cur.execute("select * from filterkernels limit 1")
 		except:
 			print("Filter kernel table not found, creating new ...")
-			self.cur.execute("create table filterkernels (filtergroup text, filtername text, matrix array)")
+			self.cur.execute("create table filterkernels (filtergroup text, filtername text, grayscale text, matrix array)")
 
-	def saveFilter(self, group, name, matrix):
-		self.cur.execute("insert into filterkernels (filtergroup, filtername, matrix) values (?, ?, ?)", (group, name, matrix))
+	def saveFilter(self, group, name, grayscale, matrix):
+		self.cur.execute("insert into filterkernels (filtergroup, filtername, grayscale, matrix) values (?, ?, ?, ?)", (group, name, grayscale, matrix))
 		self.save()
 
 	def groupList(self):
@@ -61,4 +61,4 @@ class DBlink(object):
 			self.cur.execute("drop table filterkernels")
 		except:
 			pass
-		self.cur.execute("create table filterkernels (filtergroup text, filtername text, grayscale integer, matrix array)")
+		self.cur.execute("create table filterkernels (filtergroup text, filtername text, grayscale text, matrix array)")
