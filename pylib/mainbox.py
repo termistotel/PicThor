@@ -25,8 +25,6 @@ def picToTextureBuffer(matrix):
 
 class MainBox(BoxLayout):
 
-	selectedFilterList = ObjectProperty([])
-
 	def changeView(self,ime):
 		self.clear_widgets()
 		if ime=="browser":
@@ -50,12 +48,12 @@ class MainBox(BoxLayout):
 
 	#Filter apply button action function
 	def applyButtonFunction(self):
-		#matrica = self.previewer.src
-		#self.previewer.convImg.blit_buffer(picToTextureBuffer(matrica), colorfmt='bgr')
-		self.selectedFilterList=[3]
-		print(self)
-		print(self.selectedFilterList)
-		print(self.previewer.filterselector.lockChild.selectedFilterList)
+		matrica = self.previewer.src
+		if not (matrica is None):
+			if self.filter:
+				if self.filter.mode == "grayscale":
+					filtered = cv2.filter2D(matrica, -1, self.filter.filterarray)
+					self.previewer.convImg.blit_buffer(picToTextureBuffer(filtered), colorfmt='rgb')
 
 	#Done/Return functions:
 
@@ -92,13 +90,26 @@ class MainBox(BoxLayout):
 		self.changeView("previewer")
 		#nextStep
 
-	def kernelEditorSave(self, group, name, npArray):
+	def kernelEditorSave(self, group, name, mode, npArray):
 		if testIfRegular(group, name):
-			self.database.saveFilter(group, name, npArray)
+			self.database.saveFilter(group, name, mode, npArray)
+			self.updateFilterList()
 
+	def selectCallback(self, object, state):
+		if state=="down":
+			self.filter = object
+
+	def deleteFilter(self):
+		if self.filter:
+			group, name, mode, _ = self.filter.getInfo()
+			self.database.deleteEntry(group, name, mode)
+			self.filter.delete()
+			self.filter = None
 
 	def __init__(self, db, **kwargs):
 		super(MainBox, self).__init__(**kwargs)
+		self.filter = None
+		self.updateFilterList = lambda: None
 		self.database = db
 
 		# Functions for quick debugging
@@ -113,17 +124,9 @@ class MainBox(BoxLayout):
 		self.kernelEditor=KernelEditor(main=self)
 
 
-		# Binding filter lists
-		# self.previewer.filterselector.lockChild.bind(selectedFilterList=self.setter('selectedFilterList'))
-		# self.bind(selectedFilterList=self.previewer.filterselector.lockChild.setter('selectedFilterList'))
-
 		self.add_widget(self.previewer)
-
 
 	# This is required for android to correctly display widgets on screen rotate
 
 	def on_size(self, val1, val2):
 		Clock.schedule_once(lambda dt: self.canvas.ask_update(), 0.2)
-
-	def on_selectedFilterList(self, val1, val2):
-		print('test')

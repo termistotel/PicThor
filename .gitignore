@@ -1,0 +1,5 @@
+*.pyc
+*.spec
+bin/*
+dbtest.py
+*.db
