@@ -49,6 +49,7 @@ class MoveableContent(RelativeLayout):
 		
 		# Add functions
 		self.ids.kerbutton.on_press=main.kernelButtonFunction
+		self.ids.deletebutton.on_press=main.deleteFilter
 		self.on_touch_down = partial(self.on_touch_down1, self.on_touch_down)
 
 
@@ -73,7 +74,8 @@ class MoveableContent(RelativeLayout):
 
 	# When filters get updated, propagate to children
 	def updateFilterList(self):
-		self.filterSelectMaster.updateFlterList(self)
+		# This should be replaced with an update function
+		self.filterSelectMaster.remakeFilterList()
 
 
 class FilterSelectMaster(Accordion):
@@ -81,37 +83,39 @@ class FilterSelectMaster(Accordion):
 	def __init__(self, main, **kwargs):
 		super(FilterSelectMaster, self).__init__(**kwargs)
 		self.orientation="vertical"
+		self.main = main
+		self.remakeFilterList()
 
-		for group in main.database.groupList():
+	def remakeFilterList(self):
+		self.clear_widgets()
+		for group in self.main.database.groupList():
 			if testIfRegular(group, "legitName"):
 				section = AccordionItem(title=group)
-				container = FilterGroupContainter(db=main.database, group=group, selectFun=main.selectCallback)
+				container = FilterGroupContainter(db=self.main.database, group=group, selectFun=self.main.selectCallback, section=section)
 
 				section.add_widget(container)
 				self.add_widget(section)
-			
+
 	def updateFilterList(self):
-		for child in self.children:
-			for gchild in child.children:
-				gchild.updateFilterList()
+		pass
 
 class FilterGroupContainter(GridLayout):
-	def __init__(self, db, group, selectFun, **kwargs):
+	def __init__(self, db, group, selectFun, section, **kwargs):
 		super(FilterGroupContainter, self).__init__(**kwargs)
 		self.cols = 5
 		self.db = db
 		self.group = group
 		self.selectFun = selectFun
+		self.section = section
 		self.updateFilterList(self.selectFun)
 
 	def updateFilterList(self, selectFun):
 		for row in self.db.getAllFromGroup(self.group):
-			print(row)
 			if testIfRegular(row[0], row[1]):
-				self.add_widget(Filter(filtergroup=row[0], filtername=row[1], mode=row[2], filterarray=row[3], selectFun=selectFun))
+				self.add_widget(Filter(filtergroup=row[0], filtername=row[1], mode=row[2], filterarray=row[3], selectFun=selectFun, container=self))
 
 class Filter(ToggleButton):
-	def __init__(self, filtergroup, filtername, mode, filterarray, selectFun=lambda filter, state: print("Not implemented"), **kwargs):
+	def __init__(self, filtergroup, filtername, mode, filterarray, selectFun=lambda filter, state: print("Not implemented"), container=None, **kwargs):
 		super(Filter, self).__init__(**kwargs)
 		self.filtergroup = filtergroup
 		# TODO:
@@ -120,6 +124,7 @@ class Filter(ToggleButton):
 		self.filtername = filtername
 		self.mode = mode
 		self.filterarray = filterarray
+		self.container = container
 
 		# Use self as an argument to a function that is applied when filter is selected
 		self.select = selectFun
@@ -134,3 +139,13 @@ class Filter(ToggleButton):
 
 	def on_state(self, object, state):
 		self.select(object, state)
+
+	def getInfo(self):
+		return self.filtergroup, self.filtername, self.mode, self.filterarray
+
+	def delete(self):
+		if len(self.parent.children) < 2:
+			self.container.section.parent.remove_widget(self.container.section)
+			del self.container.section
+			del self.container
+		self.parent.remove_widget(self)

@@ -93,14 +93,23 @@ class MainBox(BoxLayout):
 	def kernelEditorSave(self, group, name, mode, npArray):
 		if testIfRegular(group, name):
 			self.database.saveFilter(group, name, mode, npArray)
+			self.updateFilterList()
 
 	def selectCallback(self, object, state):
 		if state=="down":
 			self.filter = object
 
+	def deleteFilter(self):
+		if self.filter:
+			group, name, mode, _ = self.filter.getInfo()
+			self.database.deleteEntry(group, name, mode)
+			self.filter.delete()
+			self.filter = None
+
 	def __init__(self, db, **kwargs):
 		super(MainBox, self).__init__(**kwargs)
 		self.filter = None
+		self.updateFilterList = lambda: None
 		self.database = db
 
 		# Functions for quick debugging

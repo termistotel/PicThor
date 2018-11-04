@@ -50,8 +50,12 @@ class DBlink(object):
 	def getAllFromGroup(self, group):
 		return self.cur.execute("SELECT * FROM filterkernels WHERE filtergroup=?",(group, ))
 
+	def deleteEntry(self, group, name, mode):
+		self.cur.execute("DELETE FROM filterkernels WHERE filtergroup=? AND filtername=? AND grayscale=?", (group,name,mode,))
+		return self.save()
+
 	def save(self):
-		self.con.commit()
+		return self.con.commit()
 
 	def close(self):
 		self.con.close()
